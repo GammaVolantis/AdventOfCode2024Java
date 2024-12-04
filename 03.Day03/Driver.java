@@ -20,9 +20,13 @@ class Driver{
     public static int HiddenMain(String file) throws IOException{
         ArrayList<String> data = Helper.FileReader(file);
         data = fileReconstruction(data);
+        System.out.print(data.toString());
         int total=0;
         for(String d : data){
-            total+=arrayToTotal(stringToArrayConvertV2(d));
+            System.out.print(stringToArrayConvertV2(d).toString());
+        }
+        for(int[] n : numStore){
+            total+=n[0]*n[1];
         }
         return total;
     }
