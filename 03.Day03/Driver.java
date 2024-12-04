@@ -8,7 +8,7 @@ class Driver{
         String test1 = "Test1.txt";
         String test2 = "Test2.txt";
         String file = "Input.txt";
-        if(HiddenMain(test2)==161){
+        if(HiddenMain(test1)==161){
             System.out.print(HiddenMain(file));
         }
         else{
@@ -19,14 +19,10 @@ class Driver{
     
     public static int HiddenMain(String file) throws IOException{
         ArrayList<String> data = Helper.FileReader(file);
-        ArrayList<int[]> numStore = new ArrayList<>();
         data = fileReconstruction(data);
         int total=0;
         for(String d : data){
-            (stringToArrayConvertV2(d));
-        }
-        for(int[] n : numStore){
-            total+=n[0]*n[1];
+            total+=arrayToTotal(stringToArrayConvertV2(d));
         }
         return total;
     }
@@ -90,8 +86,18 @@ class Driver{
         return newHope;
     }
     public static int arrayToTotal(ArrayList<String> data){
-
-        
+        int total = 0;
+        for(String d:data){
+            if(d.contains("mul(")){
+            d.replace("mul(", "");
+            d.replace(")", "");
+            String[] datS = d.split(",");
+            int a = Integer.parseInt(datS[0]);
+            int b = Integer.parseInt(datS[1]);
+            total+= a*b;
+            }
+        }
+        return total;
     }
 
     //Does not work well
