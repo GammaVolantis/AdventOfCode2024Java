@@ -15,19 +15,23 @@ class Driver{
             System.out.print("Test1 Failed");
         }
     }
-    //Not 79748299, 73243482, 25292714
+    //Not 79748299, 73243482, 25292714, 161877942
     
     public static int HiddenMain(String file) throws IOException{
         ArrayList<String> data = Helper.FileReader(file);
         data = fileReconstruction(data);
         System.out.print(data.toString());
         int total=0;
+        ArrayList<String> stringStore = new ArrayList<>();
         for(String d : data){
-            System.out.print(stringToArrayConvertV2(d).toString());
+            ArrayList<String> tempStore = new ArrayList<>();
+            tempStore = stringToArrayConvertV2(d);
+            for(String t : tempStore){
+                stringStore.add(t);
+            }
         }
-        for(int[] n : numStore){
-            total+=n[0]*n[1];
-        }
+        System.out.print(stringStore.toString());
+        total = arrayToTotal(stringStore);
         return total;
     }
 
@@ -93,8 +97,8 @@ class Driver{
         int total = 0;
         for(String d:data){
             if(d.contains("mul(")){
-            d.replace("mul(", "");
-            d.replace(")", "");
+            d=d.replace("mul(", "");
+            d=d.replace(")", "");
             String[] datS = d.split(",");
             int a = Integer.parseInt(datS[0]);
             int b = Integer.parseInt(datS[1]);
