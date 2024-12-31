@@ -58,9 +58,6 @@ class Driver{
         }
         return total;
     }
-    
-
-
     public static ArrayList<String> DataStripper(ArrayList<String> data){
         ArrayList<String> temp = new ArrayList<>();
         int height = data.size()-1;
