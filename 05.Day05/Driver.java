@@ -192,6 +192,8 @@ class Driver{
                 }
             }
         }
+        //----------------BROKEN START----------------------------------
+        //-----INFINATE LOOP PROBLEM
         //sort the ArrayList based on the key
         for(int i=0; i<data.size(); i++){
             int first = -1;
@@ -212,6 +214,7 @@ class Driver{
                 i=0;
             }
         }
+        //----------------BROKEN END-------------------------------
         System.out.println(masterKey.toString());
         return masterKey;
     }
