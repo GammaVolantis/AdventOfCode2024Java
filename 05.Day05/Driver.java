@@ -192,28 +192,59 @@ class Driver{
                 }
             }
         }
+        // Sort based on occurence of their rules first column then second column
+
+
+        
+
         //----------------BROKEN START----------------------------------
         //-----INFINATE LOOP PROBLEM
         //sort the ArrayList based on the key
-        for(int i=0; i<data.size(); i++){
+        int counter = 0;
+        while(counter<data.size()){
+            int[] tempAr = data.getFirst();
+            counter++;
             int first = -1;
             int second = -1;
             for(int j = 0; j< masterKey.size(); j++){
-                if(data.get(i)[0]==masterKey.get(j)){
+                if(tempAr[0]==masterKey.get(j)){
                     first=j;
                 }
-                if(data.get(i)[1]==masterKey.get(j)){
+                if(tempAr[1]==masterKey.get(j)){
                     second=j;
                 }
             }
             if(first>second && first!=-1 && second!=-1){
                 //switch and restart main loop;
                 int temp = masterKey.get(first);
-                masterKey.set(first, masterKey.get(second));
-                masterKey.set(second, temp);
-                i=0;
+                masterKey.remove(first);
+                masterKey.add(temp);
+                counter=0;
             }
+            data.removeFirst();
+            data.add(tempAr);
         }
+
+
+        // for(int i=0; i<data.size(); i++){
+        //     int first = -1;
+        //     int second = -1;
+        //     for(int j = 0; j< masterKey.size(); j++){
+        //         if(data.get(i)[0]==masterKey.get(j)){
+        //             first=j;
+        //         }
+        //         if(data.get(i)[1]==masterKey.get(j)){
+        //             second=j;
+        //         }
+        //     }
+        //     if(first>second && first!=-1 && second!=-1){
+        //         //switch and restart main loop;
+        //         int temp = masterKey.get(first);
+        //         masterKey.set(first, masterKey.get(second));
+        //         masterKey.set(second, temp);
+        //         i=0;
+        //     }
+        // }
         //----------------BROKEN END-------------------------------
         System.out.println(masterKey.toString());
         return masterKey;
