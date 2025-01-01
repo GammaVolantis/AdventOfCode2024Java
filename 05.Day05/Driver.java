@@ -220,7 +220,11 @@ class Driver{
         //Second: order a new array based on the data in the class
         for(int i = 0; i<masterKeys.size(); i++){
             //first: compare the fist column then if needed compare the second to make a choice
-            
+
+            //Greater First = Forward in the array
+
+            //Greater Second = Backward in the array
+
         }
 
         //Using a que style wrap to run through the data.
