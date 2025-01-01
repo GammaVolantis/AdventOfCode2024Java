@@ -184,11 +184,11 @@ class Driver{
     }
 
     public static ArrayList<Integer> MasterKey(ArrayList<int[]> data){
-        ArrayList<Integer> masterKey = new ArrayList<>();
+        ArrayList<Integer> masterVals = new ArrayList<>();
         for(int[] dat : data){
             for(int d : dat){
-                if(!masterKey.contains(d)){
-                    masterKey.add(d);
+                if(!masterVals.contains(d)){
+                    masterVals.add(d);
                 }
             }
         }
@@ -199,7 +199,31 @@ class Driver{
 
         //----------------BROKEN START----------------------------------
         //-----INFINATE LOOP PROBLEM
-        //sort the ArrayList based on the key
+        //sort the ArrayList based on the keys
+        //First: pull in the data to a class designed to hold and parse it.
+        ArrayList<MasterVal> masterKeys;
+        for(int i =0; i<masterVals.size(); i++){
+            int first = 0;
+            int second = 0;
+            int value = masterVals.get(i);
+            for(int[] d : data){
+                if(d[0] == masterVals.get(i)){
+                    first++;
+                }
+                if(d[1] == masterVals.get(i)){
+                    second++;
+                }
+            }
+            MasterVal temp = new MasterVal(value, first, second);
+            masterKeys.add(temp);
+        }
+        //Second: order a new array based on the data in the class
+        for(int i = 0; i<masterKeys.size(); i++){
+            //first: compare the fist column then if needed compare the second to make a choice
+            
+        }
+
+        //Using a que style wrap to run through the data.
         int counter = 0;
         while(counter<data.size()){
             int[] tempAr = data.getFirst();
