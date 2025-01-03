@@ -20,6 +20,7 @@ class Driver{
         if(test1Pt2==123){
             System.out.println("Pt2 Success\n");
             System.out.println(HiddenMain2(file));
+            //NOT 5815 (too low), 6133 (too low)
         }else{
             System.out.println("Pt2 Failure " + test1Pt2 + "\n");
         }
@@ -126,23 +127,26 @@ class Driver{
                 finals.add(page);
             }
         }
-        //need to build an array of the keys sorted in one array
-        //building a method called MasterKey
-        ArrayList<Integer> masterKey = MasterKey(intKeys);
-        for(int f =0; f<finals.size(); f++){
-            int[] fin = finals.get(f);
-            // need to go through and sort the data based off the key
-            //check for each key and if key swaps a part then restart the check
-            for(int i=0; i<fin.length; i++){
-                for(int j=0; j<fin.length; j++){
-                    if(masterKey.indexOf(fin[i])<masterKey.indexOf(fin[j])){
-                        int temp = fin[j];
-                        fin[j]=fin[i];
-                        fin[i]=temp;
-                    }
-                }
-            }
-            finals.set(f, fin);
+        // //need to build an array of the keys sorted in one array
+        // //building a method called MasterKey
+        // ArrayList<Integer> masterKey = MasterKeyV2(intKeys);
+        // for(int f =0; f<finals.size(); f++){
+        //     int[] fin = finals.get(f);
+        //     // need to go through and sort the data based off the key
+        //     //check for each key and if key swaps a part then restart the check
+        //     for(int i=0; i<fin.length; i++){
+        //         for(int j=0; j<fin.length; j++){
+        //             if(masterKey.indexOf(fin[i])<masterKey.indexOf(fin[j])){
+        //                 int temp = fin[j];
+        //                 fin[j]=fin[i];
+        //                 fin[i]=temp;
+        //             }
+        //         }
+        //     }
+        //     finals.set(f, fin);
+        // }
+        for(int i=0; i<finals.size(); i++){
+            finals.set(i,SortPages(finals.get(i),MasterKeyV2(intKeys)));
         }
         for(int[] f : finals){
             for(int i = 0; i<f.length;i++){
@@ -192,16 +196,28 @@ class Driver{
                 }
             }
         }
-        // Sort based on occurence of their rules first column then second column
+        // Sort the incomming data
+        ArrayList<int[]> sortedData = data;
+        for(int i=0; i<data.size(); i++){
+            for(int j=0; j<data.size(); j++){
+                if(sortedData.get(i)[0]>sortedData.get(j)[0]){
+                    int temp[] = sortedData.get(i);
+                    sortedData.set(i,sortedData.get(j));
+                    sortedData.set(j,temp);
 
-
-        
+                }
+            }
+        }
+        // for(int i=0; i<data.size(); i++){
+        //     System.out.print(sortedData.get(i)[0]+ ",");
+        // }
+        // System.out.println();
 
         //----------------BROKEN START----------------------------------
         //-----INFINATE LOOP PROBLEM
         //sort the ArrayList based on the keys
         //First: pull in the data to a class designed to hold and parse it.
-        ArrayList<MasterVal> masterKeys;
+        ArrayList<MasterVal> masterKeys = new ArrayList<>();
         for(int i =0; i<masterVals.size(); i++){
             int first = 0;
             int second = 0;
@@ -218,63 +234,154 @@ class Driver{
             masterKeys.add(temp);
         }
         //Second: order a new array based on the data in the class
-        for(int i = 0; i<masterKeys.size(); i++){
+        ArrayList<Integer> masterKey = new ArrayList<>();
+        while(masterKeys.size()>0){
+            int index = 0;
+            MasterVal temp = masterKeys.get(index);
+            for(int i=1; i<masterKeys.size(); i++){
             //first: compare the fist column then if needed compare the second to make a choice
-
             //Greater First = Forward in the array
-
+                if(masterKeys.get(index).FirstGreaterThan(temp)){
+                    temp = masterKeys.get(i);
+                    index = i;
+                }
             //Greater Second = Backward in the array
+                else if(temp.SecondGreaterThan(masterKeys.get(i))){
+                    temp=masterKeys.get(i);
+                    index = i;
+                }
 
+
+            }
+            masterKey.addLast(temp.getValue());
+            masterKeys.remove(index);
         }
-
-        //Using a que style wrap to run through the data.
+        //System.out.println(masterKey.toString());
         int counter = 0;
-        while(counter<data.size()){
-            int[] tempAr = data.getFirst();
-            counter++;
-            int first = -1;
-            int second = -1;
-            for(int j = 0; j< masterKey.size(); j++){
-                if(tempAr[0]==masterKey.get(j)){
-                    first=j;
+        while(counter<sortedData.size()*3){
+            for(int i=0; i<sortedData.size(); i++){
+                int first = -1;
+                int second = -1;
+                counter++;
+                for(int j = 0; j< masterKey.size(); j++){
+                    if(sortedData.get(i)[0]==masterKey.get(j)){
+                        first=j;
+                    }
+                    if(sortedData.get(i)[1]==masterKey.get(j)){
+                        second=j;
+                    }
                 }
-                if(tempAr[1]==masterKey.get(j)){
-                    second=j;
+                if(first>second && first!=-1 && second!=-1){
+                    //switch and restart main loop;
+                    int temp = masterKey.get(first);
+                    masterKey.set(first, masterKey.get(second));
+                    masterKey.set(second, temp);
+                    counter = 0;
                 }
             }
-            if(first>second && first!=-1 && second!=-1){
-                //switch and restart main loop;
-                int temp = masterKey.get(first);
-                masterKey.remove(first);
-                masterKey.add(temp);
-                counter=0;
-            }
-            data.removeFirst();
-            data.add(tempAr);
         }
-
-
-        // for(int i=0; i<data.size(); i++){
-        //     int first = -1;
-        //     int second = -1;
-        //     for(int j = 0; j< masterKey.size(); j++){
-        //         if(data.get(i)[0]==masterKey.get(j)){
-        //             first=j;
-        //         }
-        //         if(data.get(i)[1]==masterKey.get(j)){
-        //             second=j;
-        //         }
-        //     }
-        //     if(first>second && first!=-1 && second!=-1){
-        //         //switch and restart main loop;
-        //         int temp = masterKey.get(first);
-        //         masterKey.set(first, masterKey.get(second));
-        //         masterKey.set(second, temp);
-        //         i=0;
-        //     }
-        // }
         //----------------BROKEN END-------------------------------
         System.out.println(masterKey.toString());
         return masterKey;
+    }
+
+    public static ArrayList<MasterDict> MasterKeyV2(ArrayList<int[]> data){
+        ArrayList<Integer> finalKey = new ArrayList<>();
+        ArrayList<MasterDict> dictKey = new ArrayList<>();
+        for(int[] d : data){
+            int location = -1;
+            for(int i=0; i<dictKey.size(); i++){
+                if(dictKey.get(i).GetCoreVal() == d[0]){
+                    location = i;
+                }
+            }
+            if(location == -1){
+                MasterDict temp = new MasterDict(d[0]);
+                temp.AddPartVal(d[1]);
+                dictKey.add(temp);
+            }
+            else{
+                dictKey.get(location).AddPartVal(d[1]);
+            }
+        }
+        /*need to place vals into their correct locations
+        /*based on all values in the dictionary that it needs
+        /*to be in front of it*/
+        //FIRST: PUT FINAL VALS INTO THE ARRAY
+        for(int i=0; i<dictKey.size(); i++){
+            finalKey.add(dictKey.get(i).GetCoreVal());
+        }
+        for(int i=0; i<data.size(); i++){
+            if(!finalKey.contains(data.get(i)[1])){
+                finalKey.addLast(data.get(i)[1]);
+            }
+        }
+        //NEXT: SORT THE DATA BASED ON THE VALUES IN THE DICT ARRAY
+        //boolean swap = false;
+        //do{
+            // swap = false;
+            // for(MasterDict dict : dictKey){
+            //     int tempLocal = -1;
+            //     for(int p : dict.GetPartVals()){
+            //         if(tempLocal == -1){
+            //             tempLocal = finalKey.indexOf(p);
+            //         }
+            //         else if(tempLocal>finalKey.indexOf(p)){
+            //             tempLocal = finalKey.indexOf(p);
+            //         }
+            //     }
+            //     int coreIndex = finalKey.indexOf(dict.GetCoreVal());
+            //     if(tempLocal<coreIndex){
+            //         swap = true;
+            //         int tempCore = finalKey.get(coreIndex);
+            //         finalKey.remove(coreIndex);
+            //         finalKey.add(tempCore);
+            //         while(finalKey.get(tempLocal) != tempCore){
+            //             int tempSwap = finalKey.get(tempLocal);
+            //             finalKey.remove(tempLocal);
+            //             finalKey.add(tempSwap);
+            //         }
+            //     }
+            // }
+        //}while(swap);
+        //Return should be this "[97, 75, 47, 61, 53, 29, 13]"
+        // System.out.println(finalKey.toString());
+        // return finalKey;
+        for(MasterDict d : dictKey){
+            System.out.println(d.toString());
+        }
+        return dictKey;
+    }
+
+    public static int[] SortPages(int[] data, ArrayList<MasterDict> keys){
+        int[] tempArray = data;
+        boolean swap = false;
+        do{
+            swap = false;
+            for(MasterDict k : keys){
+                int first = -1;
+                int second = tempArray.length;
+                for(int i=0; i<k.GetPartVals().length; i++){
+                    for(int j=0; j<tempArray.length; j++){
+                        if(tempArray[j]==k.GetPartVals()[i] && j<second){
+                            second = j;
+                        }
+                    }
+                }
+                for(int i=0; i<tempArray.length; i++){
+                    if(tempArray[i] == k.GetCoreVal()){
+                        first = i;
+                    }
+                }
+                if(first>second){
+                    swap = true;
+                    int temp = tempArray[first];
+                    tempArray[first] = tempArray[second];
+                    tempArray[second] = temp;
+                }
+            }
+        }while(swap);
+        
+        return tempArray;
     }
 }
