@@ -160,7 +160,6 @@ class Driver{
     
     public static boolean CheckPossibleInfinates(ArrayList<String> map, ArrayList<CursorData> data, CursorData current){
         char checkDire;
-        ArrayList<CursorData> tempCursors = data;
         switch(current.getDirection()){
             case'^':
                 checkDire = '>';
