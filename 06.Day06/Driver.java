@@ -4,9 +4,13 @@ import java.util.ArrayList;
 class Driver{
     public static void main(String[] args) throws IOException {
         String test1 = "Test1.txt";
+        String test2 = "Test2.txt";
+        String test3 = "Test3.txt";
         String input = "Input.txt";
         int testPt1 = HiddenMain(test1);
         int testPt2 = TraverseMapData(test1);
+        int test2Pt2 = TraverseMapData(test2);
+        int test3Pt2 = TraverseMapData(test3);
         //Part1
         if(testPt1 == 41){
             System.out.println("\nSuccess!");
@@ -17,13 +21,13 @@ class Driver{
         }
         System.out.println();
         //Part2
-        if(testPt2==6){
+        if(testPt2==6 && test2Pt2==3 && test3Pt2 == 1){
             System.out.println("\nSuccess!");
             System.out.println(TraverseMapData(input));
-            //NOT 541 (Too Low), 2018 (too High)
+            //NOT 541 (Too Low), 2018 (Too High), 1933 (Too High)
         }
         else{
-            System.out.println("\nFailure " + testPt2);
+            System.out.println("\nFailure---First:" + testPt2 + " Second:" + test2Pt2 + " Third:" + test3Pt2);
         }
         System.out.println();
 
@@ -98,20 +102,33 @@ class Driver{
         System.out.println(cursor.toString());
 
         //Decide what to do at cursor position
-        SetAtLocation(data, cursor.getLocation(),'.');
-        ArrayList<CursorData> preTurns = new ArrayList<>();        
+        SetAtLocation(data, cursor.getLocation(),'x');
+        ArrayList<CursorData> postTurns = new ArrayList<>();
+        //obstacle locations
+        ArrayList<int[]> obsLoc= new ArrayList<>();         
         while(NotOffGrid(cursor, data)){
             char nextLoc = CheckMapLocation(data, cursor.futureMoveCursor());
-            if(nextLoc=='.'){
+            if(nextLoc=='.' || nextLoc == 'x'){
                 //CHECK TO SEE IF THERE ARE ANY CURSOR LOCATIONS ON THE OTHER DIRECTIONS
-                if(CheckPossibleInfinatesV2(data, preTurns, cursor)){
-                    finalScore++;
+                if(nextLoc!='x' && CheckPossibleInfinatesV2(data, postTurns, cursor)){
+                    int[] temp = cursor.futureMoveCursor();
+                    boolean contained = false;
+                    for(int[] o : obsLoc){
+                        if(temp[0] == o[0] && temp[1] == o[1]){
+                            contained = true;
+                        }
+                    }
+                    if(!contained){
+                        finalScore++;
+                        obsLoc.add(temp);
+                    }
                 }
+                SetAtLocation(data,cursor.getLocation(),'x');
                 cursor.moveCursor();
             }
             else if(nextLoc=='#'){
                 //PUT A CURSOR IN THE ARRAY OF CURSOR LOCATIONS.
-                preTurns.add(new CursorData(cursor.getDirection(), cursor.getLocation()[0], cursor.getLocation()[1]));
+                postTurns.add(new CursorData(cursor.getDirection(), cursor.getLocation()[0], cursor.getLocation()[1]));
                 cursor.turnRight();
             }
             //System.out.println(cursor.toString());
@@ -217,14 +234,27 @@ class Driver{
 
     public static boolean CheckPossibleInfinatesV2(ArrayList<String> map, ArrayList<CursorData> data, CursorData current){
         CursorData childCursor = new CursorData(current.getDirection(), current.getLocation()[0], current.getLocation()[1]);
+        ArrayList<String> tempMap = new ArrayList<>();
+        for(int i=0; i<map.size(); i++){
+            String temp = "";
+            for(int j=0; j<map.get(i).length(); j++){
+                if(childCursor.futureMoveCursor()[0]==j && childCursor.futureMoveCursor()[1]==i){
+                    temp+='#';
+                }
+                else{
+                    temp+=map.get(i).charAt(j);
+                }
+            }
+            tempMap.add(temp);
+        }
         childCursor.turnRight();
         ArrayList<CursorData> checkData = new ArrayList<>();
         for(CursorData d : data){
             checkData.add(new CursorData(d.getDirection(), d.getLocation()[0], d.getLocation()[1]));
         }
-        while(NotOffGrid(childCursor, map)){
-            char nextLoc = CheckMapLocation(map, childCursor.futureMoveCursor());
-            if(nextLoc=='.'){
+        while(NotOffGrid(childCursor, tempMap)){
+            char nextLoc = CheckMapLocation(tempMap, childCursor.futureMoveCursor());
+            if(nextLoc=='.' || nextLoc == 'x'){
                 childCursor.moveCursor();
             }
             else if(nextLoc == '#'){
