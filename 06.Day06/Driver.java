@@ -6,7 +6,7 @@ class Driver{
         String test1 = "Test1.txt";
         String input = "Input.txt";
         int testPt1 = HiddenMain(test1);
-        int testPt2 = 0;//HiddenMain2(test1);
+        int testPt2 = TraverseMapData(test1);
         //Part1
         if(testPt1 == 41){
             System.out.println("\nSuccess!");
@@ -19,10 +19,11 @@ class Driver{
         //Part2
         if(testPt2==6){
             System.out.println("\nSuccess!");
-            //System.out.println(HiddenMain2(input));
+            System.out.println(TraverseMapData(input));
+            //NOT 541 (Too Low)
         }
         else{
-            System.out.println("\nFailure " + testPt1);
+            System.out.println("\nFailure " + testPt2);
         }
         System.out.println();
 
@@ -39,14 +40,6 @@ class Driver{
         }
         return finalScore;
     }
-    
-    public static int HiddenMain2(String file) throws IOException{
-        int finalScore = 0;
-
-
-        return finalScore;
-    }
-
 
     public static ArrayList<String> WriteMapData(String file) throws IOException{
         ArrayList<String> data = Helper.FileReader(file);
@@ -68,12 +61,12 @@ class Driver{
         }
         System.out.println(cursor.toString());
         //Decide what to do at cursor position
-        SetXAtLocation(data, cursor.getLocation());        
+        SetAtLocation(data, cursor.getLocation(),'x');        
         while(cursor.futureMoveCursor()[0]<data.get(0).length() && cursor.futureMoveCursor()[0]>-1 && cursor.futureMoveCursor()[1]<data.size() && cursor.futureMoveCursor()[1]>-1){
             char nextLoc = CheckMapLocation(data, cursor.futureMoveCursor());
             if(nextLoc=='.' || nextLoc=='x'){
                 cursor.moveCursor();
-                SetXAtLocation(data, cursor.getLocation());
+                SetAtLocation(data, cursor.getLocation(),'x');
             }
             else if(nextLoc=='#'){
                 cursor.turnRight();
@@ -83,16 +76,59 @@ class Driver{
         return data;
     }
 
+    public static int TraverseMapData(String file) throws IOException{
+        int finalScore = 0;
+        ArrayList<String> data = Helper.FileReader(file);
+        CursorData cursor = new CursorData('x', -1, -1);
+        //Find the cursor
+        for(int j=0; j<data.size(); j++){
+            for(int i=0; i<data.get(j).length(); i++){
+                switch (data.get(j).charAt(i)) {
+                    case '^':
+                    case '>':
+                    case '<':
+                    case 'v':
+                        cursor = new CursorData(data.get(j).charAt(i), i, j);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        System.out.println(cursor.toString());
+
+        //Decide what to do at cursor position
+        SetAtLocation(data, cursor.getLocation(),'.');
+        ArrayList<CursorData> preTurns = new ArrayList<>();        
+        while(cursor.futureMoveCursor()[0]<data.get(0).length() && cursor.futureMoveCursor()[0]>-1 && cursor.futureMoveCursor()[1]<data.size() && cursor.futureMoveCursor()[1]>-1){
+            char nextLoc = CheckMapLocation(data, cursor.futureMoveCursor());
+            if(nextLoc=='.'){
+                //CHECK TO SEE IF THERE ARE ANY CURSOR LOCATIONS ON THE OTHER DIRECTIONS
+                if(CheckPossibleInfinates(data, preTurns, cursor)){
+                    finalScore++;
+                }
+                cursor.moveCursor();
+            }
+            else if(nextLoc=='#'){
+                //PUT A CURSOR IN THE ARRAY OF CURSOR LOCATIONS.
+                preTurns.add(new CursorData(cursor.getDirection(), cursor.getLocation()[0], cursor.getLocation()[1]));
+                cursor.turnRight();
+            }
+            //System.out.println(cursor.toString());
+        }
+        return finalScore;
+    }
+
     public static char CheckMapLocation(ArrayList<String> data, int[] location){
         return data.get(location[1]).charAt(location[0]);
     }
 
-    public static void SetXAtLocation(ArrayList<String> data, int[] location){
+    public static void SetAtLocation(ArrayList<String> data, int[] location, char var){
         String temp = data.get(location[1]);
         String newString = "";
         for(int i=0; i<temp.length(); i++){
             if(i==location[0]){ 
-                newString+='x';
+                newString+=var;
             }
             else{
                 newString+=temp.charAt(i);
@@ -100,4 +136,79 @@ class Driver{
         }
         data.set(location[1], newString);
     }
+
+    public static boolean CheckPossibleInfinates(ArrayList<String> map, ArrayList<CursorData> data, CursorData current){
+        char checkDire;
+        ArrayList<CursorData> tempCursors = new ArrayList<>();
+        switch(current.getDirection()){
+            case'^':
+                checkDire = '>';
+                for(int i=0; i<data.size();i++){
+                    if(data.get(i).getDirection()==checkDire && data.get(i).getLocation()[0]>current.getLocation()[0] && current.getLocation()[1]==data.get(i).getLocation()[1]){
+                        boolean blocked = false;
+                        for(int j=current.getLocation()[0]; j<data.get(i).getLocation()[0]; j++){
+                            if(map.get(current.getLocation()[1]).charAt(j)=='#'){
+                                blocked = true;
+                            }
+                        }
+                        if(!blocked){
+                            return true;
+                        }
+                    }
+                }
+                break;
+            case'>':
+                checkDire = 'v';
+                for(int i=0; i<data.size();i++){
+                    if(data.get(i).getDirection()==checkDire && data.get(i).getLocation()[1]>current.getLocation()[1] && current.getLocation()[0]==data.get(i).getLocation()[0]){
+                        boolean blocked = false;
+                        for(int j=current.getLocation()[1]; j<data.get(i).getLocation()[1]; j++){
+                            if(map.get(j).charAt(current.getLocation()[0])=='#'){
+                                blocked = true;
+                            }
+                        }
+                        if(!blocked){
+                            return true;
+                        }
+                    }
+                }
+                break;
+            case'v':
+                checkDire = '<';
+                for(int i=0; i<data.size();i++){
+                    if(data.get(i).getDirection()==checkDire && data.get(i).getLocation()[0]<current.getLocation()[0] && current.getLocation()[1]==data.get(i).getLocation()[1]){
+                        boolean blocked = false;
+                        for(int j=current.getLocation()[0]; j>data.get(i).getLocation()[0]; j--){
+                            if(map.get(current.getLocation()[1]).charAt(j)=='#'){
+                                blocked = true;
+                            }
+                        }
+                        if(!blocked){
+                            return true;
+                        }
+                    }
+                }
+                break;
+            case'<':
+                checkDire = '^';
+                for(int i=0; i<data.size();i++){
+                    if(data.get(i).getDirection()==checkDire && data.get(i).getLocation()[1]<current.getLocation()[1] && current.getLocation()[0]==data.get(i).getLocation()[0]){
+                        boolean blocked = false;
+                        for(int j=current.getLocation()[1]; j>data.get(i).getLocation()[1]; j--){
+                            if(map.get(j).charAt(current.getLocation()[0])=='#'){
+                                blocked = true;
+                            }
+                        }
+                        if(!blocked){
+                            return true;
+                        }
+                    }
+                }
+                break;
+            default:
+                return false;
+        }
+        return false;
+    }
+
 }

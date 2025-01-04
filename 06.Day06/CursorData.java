@@ -10,6 +10,10 @@ public class CursorData {
         vLoc = v;
     }
 
+    public char getDirection(){
+        return direction;
+    }
+
     public int[] getLocation(){
         //horizontal then vertical
         int[] pair = new int[2];
