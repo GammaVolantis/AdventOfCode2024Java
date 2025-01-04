@@ -20,7 +20,7 @@ class Driver{
         if(testPt2==6){
             System.out.println("\nSuccess!");
             System.out.println(TraverseMapData(input));
-            //NOT 541 (Too Low)
+            //NOT 541 (Too Low), 2018 (too High)
         }
         else{
             System.out.println("\nFailure " + testPt2);
@@ -100,11 +100,11 @@ class Driver{
         //Decide what to do at cursor position
         SetAtLocation(data, cursor.getLocation(),'.');
         ArrayList<CursorData> preTurns = new ArrayList<>();        
-        while(cursor.futureMoveCursor()[0]<data.get(0).length() && cursor.futureMoveCursor()[0]>-1 && cursor.futureMoveCursor()[1]<data.size() && cursor.futureMoveCursor()[1]>-1){
+        while(NotOffGrid(cursor, data)){
             char nextLoc = CheckMapLocation(data, cursor.futureMoveCursor());
             if(nextLoc=='.'){
                 //CHECK TO SEE IF THERE ARE ANY CURSOR LOCATIONS ON THE OTHER DIRECTIONS
-                if(CheckPossibleInfinates(data, preTurns, cursor)){
+                if(CheckPossibleInfinatesV2(data, preTurns, cursor)){
                     finalScore++;
                 }
                 cursor.moveCursor();
@@ -137,9 +137,13 @@ class Driver{
         data.set(location[1], newString);
     }
 
+    public static boolean NotOffGrid(CursorData cursor, ArrayList<String> data){
+        return (cursor.futureMoveCursor()[0]<data.get(0).length() && cursor.futureMoveCursor()[0]>-1 && cursor.futureMoveCursor()[1]<data.size() && cursor.futureMoveCursor()[1]>-1);
+    }
+    
     public static boolean CheckPossibleInfinates(ArrayList<String> map, ArrayList<CursorData> data, CursorData current){
         char checkDire;
-        ArrayList<CursorData> tempCursors = new ArrayList<>();
+        ArrayList<CursorData> tempCursors = data;
         switch(current.getDirection()){
             case'^':
                 checkDire = '>';
@@ -207,6 +211,31 @@ class Driver{
                 break;
             default:
                 return false;
+        }
+        return false;
+    }
+
+    public static boolean CheckPossibleInfinatesV2(ArrayList<String> map, ArrayList<CursorData> data, CursorData current){
+        CursorData childCursor = new CursorData(current.getDirection(), current.getLocation()[0], current.getLocation()[1]);
+        childCursor.turnRight();
+        ArrayList<CursorData> checkData = new ArrayList<>();
+        for(CursorData d : data){
+            checkData.add(new CursorData(d.getDirection(), d.getLocation()[0], d.getLocation()[1]));
+        }
+        while(NotOffGrid(childCursor, map)){
+            char nextLoc = CheckMapLocation(map, childCursor.futureMoveCursor());
+            if(nextLoc=='.'){
+                childCursor.moveCursor();
+            }
+            else if(nextLoc == '#'){
+                for(int i=0; i<checkData.size(); i++){
+                    if(checkData.get(i).equals(childCursor)){
+                        return true;
+                    }
+                }
+                checkData.add(new CursorData(childCursor.getDirection(), childCursor.getLocation()[0], childCursor.getLocation()[1]));
+                childCursor.turnRight();
+            }
         }
         return false;
     }

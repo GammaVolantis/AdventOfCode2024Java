@@ -69,6 +69,20 @@ public class CursorData {
         }
     }
 
+    public boolean equals(CursorData other){
+        if(other == null || this == null){
+            return false;
+        }
+        if(other.getLocation()[0] == this.getLocation()[0]){
+            if(other.getLocation()[1] == this.getLocation()[1]){
+                if(other.getDirection() == this.getDirection()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public String toString(){
         return "[Cursor:"+direction+" Horizontal:"+hLoc+" Vertical:"+vLoc+" ]";
     }
