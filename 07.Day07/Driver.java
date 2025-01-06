@@ -18,12 +18,6 @@ class Driver{
         else{
             System.out.println("Failure " + test1Pt1);
         }
-
-        //Test Trinary
-        int val = 3;
-        for(int i=0; i<Math.pow(3,val);i++){
-            System.out.println(TrinaryMathConverter(i,val));
-        }
         
         if(test1Pt2==11387){
             System.out.println("Success!");
@@ -32,7 +26,6 @@ class Driver{
         else{
             System.out.println("Failure " + test1Pt2);
         }
-
 
     }
     
