@@ -8,13 +8,4 @@ class Driver{
 
 
     }
-
-    public static int HiddenMain(String file) throws IOException{
-        int total = 0;
-        ArrayList<String> data = Helper.FileReader(file);
-
-
-
-        return total;
-    }
 }
