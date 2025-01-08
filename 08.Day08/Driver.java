@@ -19,30 +19,42 @@ class Driver{
         ArrayList<String> data = Helper.FileReader(file);
         int width = data.get(0).length();
         int height = data.size();
-        for(int i=0; i<height; i++){
-            for(int j=0; j<width; j++){
-                //need to get the next char then iterate through the array and make sure the point would exist within the array
-            }
-        }
+        ArrayList<Tree> trees = SetUpTrees(data);
+        PrintTrees(trees);
         return total;
     }
-  
-    public static char getNextChar(ArrayList<String> data, int height, int width){
-        return data.get(height).charAt(width);
-    }
 
-    public static ArrayList<int[]> findNextOfType(ArrayList<String> data, char core){
-        ArrayList<int[]> locations = new ArrayList<>();
-        int width = data.get(0).length();
-        int height = data.size();
-        for(int i=0; i<height; i++){
-            for(int j=0; j<width; j++){
-                if(data.get(height).charAt(i) == core){
-                    int[] temp = {j,i};
-                    locations.add(temp);
+    public static ArrayList<Tree>  SetUpTrees(ArrayList<String> data){
+        ArrayList<Tree> tempTrees = new ArrayList<>();
+        for(int y=0; y<data.size(); y++){
+            for(int x=0; x<data.get(y).length(); x++){
+                char key = data.get(y).charAt(x);
+                if(key!='.'){
+                    boolean keyAdded = false;
+                    int[] tempLoc = {x,y};
+                    for(Tree tT : tempTrees){
+                        if(tT.getID()==key){
+                            tT.addNode(tempLoc);
+                            keyAdded = true;
+                        }
+                    }
+                    if(!keyAdded){
+                        Tree temp = new Tree(key, tempLoc);
+                        tempTrees.add(temp);
+                    }
                 }
             }
         }
-        return locations;
+        for(Tree tT : tempTrees){
+            tT.createMirroredTrees();
+        }
+        return tempTrees;
     }
+
+    public static void PrintTrees(ArrayList<Tree> trees){
+        for(Tree t : trees){
+            System.out.println(t.toString());
+        }
+    }
+
 }
