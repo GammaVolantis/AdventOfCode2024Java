@@ -6,10 +6,15 @@ class Driver{
     public static void main(String[] args) throws IOException {
         String test1 = "Test1.txt";
         String test2 = "Test2.txt";
+        String test3 = "Test3.txt";
+        String test4 = "Test4.txt";
+        String test5 = "Test5.txt";
         String file = "Input.txt";
         long test1Pt1 = HiddenMain(test1);
         long test1Pt2 = HiddenMain2(test1);
         long test2Pt2 = HiddenMain2(test2);
+        long test3Pt2 = HiddenMain2(test3);
+        long test4Pt2 = HiddenMain2(test4);
         if(test1Pt1 == 1928){
             System.out.println("Success!");
             System.out.println(HiddenMain(file));
@@ -18,12 +23,16 @@ class Driver{
         else{
             System.out.println("Failure " + test1Pt1);
         }
-        if(test1Pt2 == 2858 && test2Pt2 == 58){
+        if(test1Pt2 == 2858 && test2Pt2 == 58 && test3Pt2 == 3){
             System.out.println("Success!");
-            System.out.println(HiddenMain2(file));
+            long output = HiddenMain2(file);
+            if(output< 7264802235567L)
+                System.out.println("Success! "+ output);
+            else
+                System.out.println("Failure(Too High) " + output);
             //Not 7264802235567 (too high)
         }else{
-            System.out.println("Failure " + test1Pt2 + " " + test2Pt2);
+            System.out.println("Failure " + test1Pt2 + " " + test2Pt2 + " " + test3Pt2 + " " + test4Pt2 );
         }
     }
 
@@ -88,8 +97,8 @@ class Driver{
                 String storedString = Integer.toString(storedData);
                 tempFile = new FileStorage(storedString, fileSpace);
                 temp.add(tempFile);
-                storedData++;
             }
+            storedData++;
             if(emptySpace>0){
                 emptySlot = new FileStorage(".", emptySpace);
                 temp.add(emptySlot);
@@ -167,7 +176,8 @@ class Driver{
         ArrayList<FileStorage> temp = files;
         for(int j=temp.size()-1; j>-1; j--){
             if(temp.get(j).getID()!="."){
-                for(int k=0 ; k<j; k++){
+                String last = temp.get(j).getID();
+                for(int k=0 ; k<=j; k++){
                     if(temp.get(k).getID()=="." && temp.get(k).getSize()>=temp.get(j).getSize()){
                         FileStorage tempSpace = temp.get(k);
                         FileStorage tempFile = temp.get(j);
