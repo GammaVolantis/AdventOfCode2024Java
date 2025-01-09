@@ -185,7 +185,7 @@ class Driver{
                         FileStorage t = tempFile;
                         temp.set(j,tempSpace);
                         temp.set(k, t);
-                        if(eS!=0){
+                        if(eS>0){
                             FileStorage extSpace = new FileStorage(".",eS);
                             tempSpace.setSize(tempSpace.getSize()-eS);
                             ArrayList<FileStorage> tmm = new ArrayList<>();
@@ -197,12 +197,21 @@ class Driver{
                                     j++;
                                 }
                             }
+                            if(j<tmm.size()-1 && tmm.get(j) == tmm.get(j+1)){
+                                tmm.get(j).setSize(tmm.get(j).getSize()+tmm.get(j+1).getSize());
+                                tmm.remove(j+1);
+                            }
+                            if(tmm.get(j)==tmm.get(j-1) && j>0){
+                                tmm.get(j).setSize(tmm.get(j).getSize()+tmm.get(j-1).getSize());
+                                tmm.remove(j-1);
+                                j--;
+                            }
                             temp = tmm;
                         }
-                        int beforeCondense = temp.size();
-                        temp = CondenseSpaces(temp);
-                        j = j+(temp.size() - beforeCondense);
-                        //System.out.println(temp);
+                        //int beforeCondense = temp.size();
+                        //temp = CondenseSpaces(temp);
+                        //j = j+(temp.size() - beforeCondense);
+                        System.out.println(temp);
                     }
                 }
             }
@@ -224,6 +233,7 @@ class Driver{
                 tmm.remove(i+1);
                 tmm.get(i).setSize(newSize);
             }
+
         }
         return tmm;
     }
