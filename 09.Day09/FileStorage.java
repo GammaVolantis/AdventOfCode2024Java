@@ -16,12 +16,24 @@ public class FileStorage {
         return id;
     }
 
+    public void setSize(int val){
+        this.size = val;
+    }
+
     public int getSize(){
         return size;
     }
 
     public boolean equalsSpace(FileStorage other){
         return this.size==other.size;
+    }
+
+    public String toString(){
+        String temp = "";
+        for(int i=0; i<size; i++){
+            temp+=id;
+        }
+        return temp;
     }
 
 }
