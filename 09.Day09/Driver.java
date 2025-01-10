@@ -11,10 +11,10 @@ class Driver{
         String test5 = "Test5.txt";
         String file = "Input.txt";
         long test1Pt1 = HiddenMain(test1);
-        long test1Pt2 = HiddenMain2(test1);
-        long test2Pt2 = HiddenMain2(test2);
-        long test3Pt2 = HiddenMain2(test3);
-        long test4Pt2 = HiddenMain2(test4);
+        long test1Pt2 = HiddenMain3(test1);
+        long test2Pt2 = HiddenMain3(test2);
+        long test3Pt2 = HiddenMain3(test3);
+        long test4Pt2 = HiddenMain3(test4);
         if(test1Pt1 == 1928){
             System.out.println("Success!");
             System.out.println(HiddenMain(file));
@@ -237,5 +237,35 @@ class Driver{
         }
         return tmm;
     }
+
+    public static long HiddenMain3(String file) throws IOException{
+        long total = 0;
+        ArrayList<String> data = Helper.FileReader(file);
+        ArrayList<DataSlot> driveStorage = StoreDataOnDrive(data);
+        System.out.println(driveStorage);
+        
+        return total;
+    }
+
+    public static ArrayList<DataSlot> StoreDataOnDrive(ArrayList<String> data){
+        ArrayList<DataSlot> drive = new ArrayList<>();
+        long iterator = 0;
+        String dataString = data.get(0);
+        for(int i=0; i<dataString.length(); i+=2){
+            int first = Character.getNumericValue(dataString.charAt(i));
+            int second = Character.getNumericValue(dataString.charAt(i));
+            DataSlot temp;
+            if(first>0){
+                temp = new DataSlot(iterator, first, first+second);
+            }else{
+                temp = new DataSlot(-1, first, first+second);
+            }
+            drive.add(temp);
+            iterator++;
+        }
+        return drive;
+    }
+
+
 
 }
