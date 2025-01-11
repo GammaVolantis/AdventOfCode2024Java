@@ -12,6 +12,7 @@ class Driver{
         String file = "Input.txt";
         long test1Pt1 = HiddenMain(test1);
         long test1Pt2 = HiddenMain3(test1);
+        long test2Pt2HM2 = HiddenMain2(test2);
         long test2Pt2 = HiddenMain3(test2);
         long test3Pt2 = HiddenMain3(test3);
         long test4Pt2 = HiddenMain3(test4);
@@ -25,7 +26,7 @@ class Driver{
         }
         if(test1Pt2 == 2858 && test2Pt2 == 58 && test3Pt2 == 3){
             System.out.println("Success!");
-            long output = HiddenMain2(file);
+            long output = HiddenMain3(file);
             if(output< 7264802235567L)
                 System.out.println("Success! "+ output);
             else
@@ -243,7 +244,17 @@ class Driver{
         ArrayList<String> data = Helper.FileReader(file);
         ArrayList<DataSlot> driveStorage = StoreDataOnDrive(data);
         System.out.println(driveStorage);
-        
+        driveStorage = ShiftFilesToEmpty(driveStorage);
+        System.out.println(driveStorage);
+        long iter=0;
+        for(DataSlot d : driveStorage){
+            for(int i=0; i<d.getEmptySize(); i++){
+                if(i<d.getDataSize()){
+                    total+=iter*d.getData();
+                }
+                iter++;
+            }
+        }
         return total;
     }
 
@@ -253,7 +264,10 @@ class Driver{
         String dataString = data.get(0);
         for(int i=0; i<dataString.length(); i+=2){
             int first = Character.getNumericValue(dataString.charAt(i));
-            int second = Character.getNumericValue(dataString.charAt(i));
+            int second = 0;
+            if(i+1<dataString.length()){
+                second = Character.getNumericValue(dataString.charAt(i+1));
+            }
             DataSlot temp;
             if(first>0){
                 temp = new DataSlot(iterator, first, first+second);
@@ -264,6 +278,34 @@ class Driver{
             iterator++;
         }
         return drive;
+    }
+
+    public static ArrayList<DataSlot> ShiftFilesToEmpty(ArrayList<DataSlot> data){
+        ArrayList<DataSlot> driveStorage = data;
+        for(int i=driveStorage.size()-1; i>0; i--){
+            DataSlot mover = driveStorage.get(i);
+            DataSlot beforeMover = driveStorage.get(i-1);
+            for(int j=0; j<=i; j++){
+                long val = driveStorage.get(j).getData();
+                int size = driveStorage.get(j).getDataSize();
+                int empty = driveStorage.get(j).getEmptySize();
+                DataSlot checked = new DataSlot(val, size, empty);
+                if(mover.getDataSize()<=checked.getEmptySize()-checked.getDataSize() && i!=j){
+                    beforeMover.setEmptySize(beforeMover.getEmptySize()+mover.getEmptySize());
+                    driveStorage.remove(i);
+                    int extraSpace = checked.getEmptySize()-checked.getDataSize();
+                    mover.setEmptySize(extraSpace);
+                    checked.setEmptySize(checked.getEmptySize()-extraSpace);
+                    driveStorage.add(j+1, mover);
+                    driveStorage.set(j, checked);
+                    break;
+                }
+                else if(mover.getDataSize()<=checked.getEmptySize()-checked.getDataSize()){
+                    //need to write a way to handle this edge case where i==j
+                }
+            }
+        }
+        return driveStorage;
     }
 
 
